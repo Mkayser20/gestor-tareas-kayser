@@ -13,4 +13,14 @@ describe('TaskManagerScreen', () => {
 
     expect(screen.getByTestId('completed-count').props.children).toBe(3);
   });
+
+    it('oculta el indicador de carga cuando la API falla', async () => {
+    render(<TaskManagerScreen />);
+    await screen.findByTestId('toggle-t01', {}, { timeout: 3000 });
+
+    fireEvent.press(screen.getByTestId('simulate-error-button'));
+
+    await screen.findByText('No pudimos cargar las tareas. Probá otra vez.', {}, { timeout: 3000 });
+    expect(screen.queryByText('Consultando tareas…')).toBeNull();
+  }, 20000);
 });
