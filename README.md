@@ -24,6 +24,7 @@ La app usa `GET /tasks/` (paginado), `POST /tasks/`, `PUT /tasks/{id}` y
 tareas recibidas se muestran con prioridad media. Reiniciá Expo si cambiás `.env`.
 La API documentada no requiere credenciales; no agregues usuario ni contraseña a
 variables `EXPO_PUBLIC_`, ya que esas variables se incluyen en el bundle.
+Arquitectura, flujo y contrato de la API: [docs/arquitectura.md](docs/arquitectura.md).
 Abrí la development build instalada y conectala al servidor. Si usás Expo Go (con SDK 57 compatible), ejecutá `npx expo start --go`.
 
 > **Muy importante:** una APK de desarrollo creada para otro proyecto no garantiza compatibilidad nativa con este proyecto. Si falta un módulo, la versión de SDK no coincide o la APK no puede abrirlo, generá una development build correspondiente. Las correcciones de JS/TS **no requieren reconstrucción** de una development build compatible.

@@ -132,8 +132,8 @@ Cada incidencia se diagnosticó con una herramienta (consola, DevTools o test), 
 | Tarjeta expandida | `details-t02` presente sin haberlo abierto; 11 pasados y 1 fallido | Pasa; 12 de 12 | `TaskManagerScreen.test.tsx` |
 
 ## Conclusión y control de cambios
-- **Commit final (hash):** `153d842` (a actualizar si se agregan commits posteriores)
-- **Mensaje del commit:** fix(lista): usar id de la tarea como key en el FlatList
+- **Commit final de código (hash):** `bd9a465`
+- **Mensaje del commit:** feat(api): conectar gestor de tareas con backend
 
 Historial de commits en la rama `fix/incidencias`:
 
@@ -147,6 +147,7 @@ Historial de commits en la rama `fix/incidencias`:
 | `2d5aedb` | fix(estado): no mutar tareas en toggleTask y agregar test de regresión |
 | `313de5d` | fix(carga): apagar loading con finally al fallar la API |
 | `153d842` | fix(lista): usar id de la tarea como key en el FlatList |
+| `bd9a465` | feat(api): conectar gestor de tareas con backend |
 
 - **Qué aprendí y cómo lo aplicaría a mi app final:**
   - Reproducir el error antes de tocar el código, y escribir primero el test que falla, da una prueba objetiva del «antes» y del «después».
