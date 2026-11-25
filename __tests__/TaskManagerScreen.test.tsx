@@ -23,4 +23,17 @@ describe('TaskManagerScreen', () => {
     await screen.findByText('No pudimos cargar las tareas. Probá otra vez.', {}, { timeout: 3000 });
     expect(screen.queryByText('Consultando tareas…')).toBeNull();
   }, 20000);
+
+    it('no arrastra la tarjeta expandida a otra tarea al cambiar de filtro', async () => {
+    render(<TaskManagerScreen />);
+    await screen.findByTestId('expand-t01', {}, { timeout: 3000 });
+
+    fireEvent.press(screen.getByTestId('expand-t01'));
+    expect(screen.getByTestId('details-t01')).toBeTruthy();
+
+    fireEvent.press(screen.getByText('Completadas'));
+
+    expect(screen.queryByTestId('details-t02')).toBeNull();
+    expect(screen.queryByTestId('details-t05')).toBeNull();
+  }, 20000);
 });
