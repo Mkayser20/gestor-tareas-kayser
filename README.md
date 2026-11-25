@@ -1,6 +1,6 @@
 # Gestor de tareas — Taller de debugging y testing (Expo SDK 57)
 
-Proyecto **independiente** de React Native + Expo Router + TypeScript para 3.º año. Contiene defectos **intencionales** que permiten enseñar diagnóstico, debugging, pruebas y documentación. No necesita backend: el servicio de tareas es simulado.
+Proyecto de React Native + Expo Router + TypeScript para 3.º año. Contiene defectos **intencionales** que permiten enseñar diagnóstico, debugging, pruebas y documentación. Las tareas se gestionan con la API configurada en `EXPO_PUBLIC_API_URL`.
 
 ## Requisitos
 - Node.js **22.13 o superior** (mínimo para SDK 57; usar una versión LTS compatible).
@@ -13,6 +13,17 @@ npm install
 npx expo install --fix
 npx expo start --dev-client
 ```
+
+Configurá la URL base del backend en `.env` antes de iniciar Expo:
+```env
+EXPO_PUBLIC_API_URL=https://api.montenegroariel.com.ar
+```
+
+La app usa `GET /tasks/` (paginado), `POST /tasks/`, `PUT /tasks/{id}` y
+`DELETE /tasks/{id}`. El contrato de la API no incluye prioridad, por eso las
+tareas recibidas se muestran con prioridad media. Reiniciá Expo si cambiás `.env`.
+La API documentada no requiere credenciales; no agregues usuario ni contraseña a
+variables `EXPO_PUBLIC_`, ya que esas variables se incluyen en el bundle.
 Abrí la development build instalada y conectala al servidor. Si usás Expo Go (con SDK 57 compatible), ejecutá `npx expo start --go`.
 
 > **Muy importante:** una APK de desarrollo creada para otro proyecto no garantiza compatibilidad nativa con este proyecto. Si falta un módulo, la versión de SDK no coincide o la APK no puede abrirlo, generá una development build correspondiente. Las correcciones de JS/TS **no requieren reconstrucción** de una development build compatible.
@@ -24,19 +35,19 @@ npm test
 El proyecto contiene pruebas que **deben fallar antes de corregir** algunos errores. Se diseñaron para mostrar cómo un test evidencia un fallo.
 
 ## Qué puede hacer la app
-- Listar tareas con un servicio mock de 700 ms.
+- Listar tareas desde el backend.
 - Buscar tareas y filtrarlas por estado.
-- Agregar y eliminar tareas.
 - Cambiar el estado completada/pendiente.
 - Expandir tarjetas para ver el detalle.
-- Simular una caída de servicio (HTTP 503 ficticio).
+- Crear, actualizar y eliminar tareas en el backend.
+- Simular una caída de servicio (HTTP 503).
 - Abrir una pantalla con la consigna.
 
 ## Estructura
 ```text
 app/                      # Rutas de Expo Router (_layout, inicio, guía)
 src/components/           # TaskCard, StatusTabs
-src/services/             # Servicio mock, sin llamadas reales
+src/services/             # Cliente HTTP del backend
 src/types/                # Tipos TypeScript
 src/utils/                # Filtrado y validaciones
 __tests__/                # Pruebas unitarias y de componentes

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -7,7 +7,12 @@ import {
 } from 'react-native';
 import { TaskCard } from '../src/components/TaskCard';
 import { StatusTabs } from '../src/components/StatusTabs';
-import { fetchTasks } from '../src/services/taskService';
+import {
+  createTask as createRemoteTask,
+  deleteTask as deleteRemoteTask,
+  fetchTasks,
+  updateTask as updateRemoteTask,
+} from '../src/services/taskService';
 import type { Task, TaskStatus } from '../src/types/task';
 import { filterTasks } from '../src/utils/taskFilters';
 import { isValidTaskTitle } from '../src/utils/taskValidation';
@@ -20,7 +25,6 @@ export default function TaskManagerScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState('');
-  const nextId = useRef(100);
 
   async function loadTasks(simulateFailure = false) {
     setLoading(true);
@@ -44,33 +48,56 @@ export default function TaskManagerScreen() {
   const total = tasks.length;
   const completed = tasks.filter((task) => task.completed).length;
 
-  function toggleTask(id: string) {
-     setTasks((previous) =>
-      previous.map((task) => (task.id === id ? { ...task, completed: !task.completed } : task)),
-     );
+  async function toggleTask(id: string) {
+    const currentTask = tasks.find((task) => task.id === id);
+    if (!currentTask) return;
+
+    try {
+      const updatedTask = await updateRemoteTask(id, {
+        title: currentTask.title,
+        description: currentTask.description,
+        completed: !currentTask.completed,
+      });
+      setTasks((previous) => previous.map((task) => (task.id === id ? updatedTask : task)));
+      setError(null);
+    } catch (caught) {
+      console.error('[taskService] No se pudo actualizar la tarea', caught);
+      setError('No pudimos actualizar la tarea. Probá otra vez.');
+    }
   }
 
-  function addTask() {
+  async function addTask() {
     if (!isValidTaskTitle(newTitle)) {
       setFeedback('Ingresá un nombre válido para continuar.');
       return;
     }
-    const task: Task = {
-      id: `nuevo-${nextId.current++}`,
-      title: newTitle,
-      description: 'Tarea creada durante el taller de debugging.',
-      priority: 'media',
-      completed: false,
-    };
-    setTasks((previous) => [task, ...previous]);
-    setNewTitle('');
-    setFeedback('Tarea agregada.');
-    Keyboard.dismiss();
+    try {
+      const task = await createRemoteTask({
+        title: newTitle.trim(),
+        description: 'Tarea creada durante el taller de debugging.',
+        completed: false,
+      });
+      setTasks((previous) => [task, ...previous]);
+      setNewTitle('');
+      setFeedback('Tarea agregada.');
+      setError(null);
+      Keyboard.dismiss();
+    } catch (caught) {
+      console.error('[taskService] No se pudo crear la tarea', caught);
+      setError('No pudimos agregar la tarea. Probá otra vez.');
+    }
   }
 
-  function deleteTask(id: string) {
-    setTasks((previous) => previous.filter((task) => task.id !== id));
-    setFeedback('Tarea eliminada.');
+  async function deleteTask(id: string) {
+    try {
+      await deleteRemoteTask(id);
+      setTasks((previous) => previous.filter((task) => task.id !== id));
+      setFeedback('Tarea eliminada.');
+      setError(null);
+    } catch (caught) {
+      console.error('[taskService] No se pudo eliminar la tarea', caught);
+      setError('No pudimos eliminar la tarea. Probá otra vez.');
+    }
   }
 
   return (
